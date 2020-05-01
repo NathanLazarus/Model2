@@ -83,17 +83,11 @@ else
     
 end
 
-firstorder = readmatrix("C:/Users/Nathan/Downloads/PerturbationMethods/Model2/coefs1.csv");
-secondorder = readmatrix("C:/Users/Nathan/Downloads/PerturbationMethods/Model2/coefs2.csv");
-thirdorder = readmatrix("C:/Users/Nathan/Downloads/PerturbationMethods/Model2/coefs2.csv");
-dec_k=[KSTAR,firstorder(1,:),1/2*secondorder(1,:),1/3*thirdorder(1,:)];
-dec_l=[LSTAR,firstorder(2,:),1/2*secondorder(2,:),1/3*thirdorder(2,:)];
-dec_c=[CSTAR,firstorder(3,:),1/2*secondorder(3,:),1/3*thirdorder(3,:)];
-
-flatten = @(A) A(:);
-statevars = [10,1,3]
-ssvals = [3,1,0]
-flatten(statevars'*flatten((statevars)' * (statevars))')'
+coefs = readmatrix("C:/Users/Nathan/Downloads/PerturbationMethods/Model2/coefs.csv");
+hx1 = r
+dec_k=[KSTAR,hx1,1/2*hxx1,1/3*hxxx1];
+dec_l=[LSTAR,gx1,1/2*gxx1,1/3*gxxx1];
+dec_c=[CSTAR,gx2,1/2*gxx2,1/3*gxxx2];
 
 ssvals = [KSTAR,ZSTAR,ZSTAR,ZSTAR,ZSTAR,PSTAR];
 if irf
