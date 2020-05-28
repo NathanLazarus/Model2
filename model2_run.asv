@@ -17,7 +17,7 @@ else
     u = additive_u;
 end
 
-order = 2;
+order = 4;
 decision_func_to_use = @decision_func_SchmittGrohe;
 
 LAMBDAPhigh = 0.95;
