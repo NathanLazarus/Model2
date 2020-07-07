@@ -1,9 +1,11 @@
 % model2_run.M
 % Calls: model2.m num_eval.m  model2_ss_numeric.m gx_hx.m gxx_hxx.m gss_hss.m
-function [rgwkcl_mat] = model2_run(DELTA,ALFA,BETTA,G,SIGM,LAMBDAP,LAMBDAZ,sigma_Z,sigma_P,MU,FRISCHELAS,STEADYSTATEL,T,shock,k0_mult,MultiplicativeU,startopposite,regimechanges,regime_change_frequency,randomseq,order)
+function [rgwkcl_mat] = model2_testing(DELTA,ALFA,BETTA,G,SIGM,LAMBDAP,LAMBDAZ,...
+    sigma_Z,sigma_P,MU,FRISCHELAS,STEADYSTATEL,T,shock,k0_mult,MultiplicativeU,...
+    startopposite,regimechanges,regime_change_frequency,randomseq,order,useopposite,shiftstart,startpoint)
 
 hardcode_irf_T = 100;
-
+eds_points = readmatrix("C:/Users/Nathan/Downloads/PerturbationMethods/eds_points_for_irf.csv");
 % clear all
 
 use_SchmittGrohe_Uribe_Matlab_code_to_find_coefficients = false;
@@ -11,18 +13,19 @@ use_SchmittGrohe_Uribe_Matlab_code_to_find_coefficients = false;
 defaults = {0.08,0.32,0.98,1.014,...
     0.9,0.95,0.92,0.017,...
     0.03,0.086,0.5,0.3,...
-    200,"historical_endogenous_P",1,1,...
-    1,0,50,2,4};
+    200,"none",1,1,...
+    0,0,50,2,4,0,"none",1};
 
 var = ["DELTA","ALFA","BETTA","G",...
     "SIGM","LAMBDAP","LAMBDAZ","sigma_Z",...
     "sigma_P","MU","FRISCHELAS","STEADYSTATEL",...
     "T","shock","k0_mult","MultiplicativeU",...
-    "startopposite","regimechanges","regime_change_frequency","randomseq","order"];
-
+    "startopposite","regimechanges","regime_change_frequency","randomseq","order","useopposite","shiftstart","startpoint"];
 
 % Determine where your m-file's folder is.
 folder = fileparts(which(mfilename));
+folder
+which(mfilename)
 addpath(join([folder,'\','MyHelperFunctions'],""))
 addpath(join([folder,'\','SchmittGroheUribeHelperFunctions'],""))
 
@@ -89,8 +92,10 @@ value_of_P_where_LSTAR_equals_STEADYSTATEL = G^(1/(1-LAMBDAPlow));
 fprintf("{%.15g, %.15g, %.15g, %.15g, %.15g, %d}\n",KSTAR,CSTAR,LSTAR,GAMA,ETA,MultiplicativeU)
 % [KSTAR,CSTAR,LSTAR,WSTAR,RSTAR,GAMA,ETA]=model2_ss_numericsetGAMAandETA(DELTA,ALFA,BETTA,G,PSTAR,FRISCHELAS,STEADYSTATEL,SIGM,ZSTAR,sym_labor_supply,intertemporal_euler_ss,u)
 if startopposite
-    Popposite = G^(1/(1-LAMBDAPopposite))
-    KSTARopposite = model2_ss_numeric(KSTAR,CSTAR,LSTAR,DELTA,ALFA,BETTA,G,Popposite,ETA,GAMA,SIGM,ZSTAR,sym_labor_supply,intertemporal_euler_ss)
+    if string(shock) == "historical_endogenous_P"
+        Popposite = G^(1/(1-LAMBDAPopposite));
+    end
+    KSTARopposite = model2_ss_numeric(KSTAR,CSTAR,LSTAR,DELTA,ALFA,BETTA,G,Popposite,ETA,GAMA,SIGM,ZSTAR,sym_labor_supply,intertemporal_euler_ss);
     k0_mult = KSTARopposite/KSTAR;
 end
 
@@ -120,6 +125,12 @@ else
     dec_l_opposite=[LSTAR,order1_opposite(2,:),1/2*order2_opposite(2,:),1/6*order3_opposite(2,:),1/24*order4_opposite(2,:)];
     dec_c_opposite=[CSTAR,order1_opposite(3,:),1/2*order2_opposite(3,:),1/6*order3_opposite(3,:),1/24*order4_opposite(3,:)];
     
+    if useopposite
+        dec_k = dec_k_opposite;
+        dec_l = dec_l_opposite;
+        dec_c = dec_c_opposite;
+    end
+    
 end
 
 ssvals = [KSTAR,ZSTAR,ZSTAR,ZSTAR,ZSTAR,PSTAR];
@@ -133,20 +144,21 @@ end
 rng(123140+randomseq,"twister");
 rho_P = normrnd(0,sigma_P,[1 T]);
 
+
 if (string(shock) == "historical" || string(shock) == "historical_endogenous_P") %historical
     T = 37;
     realTFP = readmatrix("C:/Users/Nathan/Downloads/PerturbationMethods/Parameterizations/TFPshocks.csv");
     rho_Z = zeros([1 T]) + realTFP(realTFP(:,1)>1980.5&realTFP(:,1)<2017.5,2);
-    if string(shock) == "historical"
-        realProfits = readmatrix("C:/Users/Nathan/Downloads/PerturbationMethods/Parameterizations/ProfitShare.csv");
-        True_P_Path = (1./(1-realProfits(realProfits(:,1)>1980.5&realProfits(:,1)<2017.5,2)))';
-        historical_Z_path = zeros([1 T]) + ZSTAR^LAMBDAZ*exp(rho_Z(1));
-        rho_P = zeros([1 T]) + log(True_P_Path(1)/P_func(G,PSTAR,LAMBDAP,historical_Z_path(1),historical_Z_path(1),historical_Z_path(1),historical_Z_path(1),historical_Z_path(1),MU,0));
-        for i=2:T
-            historical_Z_path(i)=historical_Z_path(i-1)^LAMBDAZ*exp(rho_Z(i));
-            historical_P_implied_by_Z = P_func(G,True_P_Path(max(i-1,1)),LAMBDAP,historical_Z_path(i),historical_Z_path(max(i-1,1)),historical_Z_path(max(i-2,1)),historical_Z_path(max(i-3,1)),historical_Z_path(max(i-4,1)),MU,0);
-            rho_P(i) = log(True_P_Path(i)/historical_P_implied_by_Z);
-        end
+    realProfits = readmatrix("C:/Users/Nathan/Downloads/PerturbationMethods/Parameterizations/ProfitShare.csv");
+    Loop_P_Path = (1./(1-realProfits(realProfits(:,1)>1980.5&realProfits(:,1)<2017.5,2)))';
+    simulated_P_implied_by_historical_Z = Loop_P_Path;
+    historical_Z_path = zeros([1 T]) + ZSTAR^LAMBDAZ*exp(rho_Z(1));
+    rho_P = zeros([1 T]) + log(Loop_P_Path(1)/P_func(G,PSTAR,LAMBDAP,historical_Z_path(1),historical_Z_path(1),historical_Z_path(1),historical_Z_path(1),historical_Z_path(1),MU,0));
+    for i=2:T
+        historical_Z_path(i)=historical_Z_path(i-1)^LAMBDAZ*exp(rho_Z(i));
+        historical_P_implied_by_Z = P_func(G,Loop_P_Path(max(i-1,1)),LAMBDAP,historical_Z_path(i),historical_Z_path(max(i-1,1)),historical_Z_path(max(i-2,1)),historical_Z_path(max(i-3,1)),historical_Z_path(max(i-4,1)),MU,0);
+        simulated_P_implied_by_historical_Z(i) = P_func(G,simulated_P_implied_by_historical_Z(max(i-1,1)),LAMBDAP,historical_Z_path(i),historical_Z_path(max(i-1,1)),historical_Z_path(max(i-2,1)),historical_Z_path(max(i-3,1)),historical_Z_path(max(i-4,1)),MU,0);
+        rho_P(i) = log(Loop_P_Path(i)/historical_P_implied_by_Z);
     end
 end
 
@@ -210,14 +222,26 @@ for i=2:T
     
     else
         k_sim(i)=decision_func_to_use(dec_k,state_vars(i-1,:),ssvals,sigma_Z,sigma_P);
+        P_sim(i) = P_func_greater_than_1(G,P_sim(max(i-1,1)),LAMBDAP,Z_sim(i),Z_sim(max(i-1,1)),Z_sim(max(i-2,1)),Z_sim(max(i-3,1)),Z_sim(max(i-4,1)),MU,rho_P(i));
+
         if i == T-(hardcode_irf_T-2) && string(shock_character_vector(1:3)) == "irf" && string(shock_character_vector(5)) == "K"
             k_sim(i) = k_sim(i-1)*0.5;
+        end
+        if i == T-(hardcode_irf_T-1) && string(shock_character_vector(1:3)) == "irf" && contains(shiftstart,"k")
+            k_sim(i) = eds_points(startpoint,1);
+        end
+        if i < T-(hardcode_irf_T-1) && string(shock_character_vector(1:3)) == "irf" && contains(shiftstart,"P")
+            P_sim(i) = eds_points(startpoint,2);
+        end
+        if i < T-(hardcode_irf_T-1) && string(shock_character_vector(1:3)) == "irf" && contains(shiftstart,"Z")
+            Z_sim(max(i-3,1)) = eds_points(startpoint,6);
+            Z_sim(max(i-2,1)) = eds_points(startpoint,5);
+            Z_sim(max(i-1,1)) = eds_points(startpoint,4);
+            Z_sim(i) = eds_points(startpoint,3);
         end
         if i == 5 && (string(shock) == "historical" || string(shock) == "historical_endogenous_P")
             k_sim(i) = KSTAR*k0_mult;
         end
-
-        P_sim(i) = P_func_greater_than_1(G,P_sim(max(i-1,1)),LAMBDAP,Z_sim(i),Z_sim(max(i-1,1)),Z_sim(max(i-2,1)),Z_sim(max(i-3,1)),Z_sim(max(i-4,1)),MU,rho_P(i));
         
         if i == 4 && string(shock) == "historical_endogenous_P" && startopposite
             P_sim(i) = Popposite;
@@ -267,8 +291,6 @@ end
 if string(shock_character_vector(1:3)) == "irf"
     rgwkcl_mat = rgwkcl_mat((T-(hardcode_irf_T-1)):T,:);
 end
-
-[P_sim',True_P_Path',historical_Z_path']
 
 % 
 % filename = join(["C:/Users/Nathan/Downloads/PerturbationMethods/IRFs.xlsx"],"");
