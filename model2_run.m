@@ -109,18 +109,20 @@ else
             eval(sprintf('order%1$d = readmatrix(join(["C:/Users/Nathan/Downloads/PerturbationMethods/Model2/MathematicaCoefs/",utility_function_str,"UtilityLambdaP",string(round(LAMBDAP*100)),"coefs",%1$d,".csv"],""));',order_to_check_for_coefs))
             eval(sprintf('order%1$d_opposite = readmatrix(join(["C:/Users/Nathan/Downloads/PerturbationMethods/Model2/MathematicaCoefs/",utility_function_str,"UtilityLambdaP",string(round(LAMBDAPopposite*100)),"coefs%1$d.csv"],""));',order_to_check_for_coefs))
         else
-            eval(sprintf('order%1$d = zeros([3 nstates_plus_shocks^%1$d]);',order_to_check_for_coefs))
-            eval(sprintf('order%1$d_opposite = zeros([3 nstates_plus_shocks^%1$d]);',order_to_check_for_coefs))
+            eval(sprintf('order%1$d = zeros([4 nstates_plus_shocks^%1$d]);',order_to_check_for_coefs))
+            eval(sprintf('order%1$d_opposite = zeros([4 nstates_plus_shocks^%1$d]);',order_to_check_for_coefs))
         end
     end
 
     dec_k=[KSTAR,order1(1,:),1/2*order2(1,:),1/6*order3(1,:),1/24*order4(1,:)];
-    dec_l=[LSTAR,order1(2,:),1/2*order2(2,:),1/6*order3(2,:),1/24*order4(2,:)];
-    dec_c=[CSTAR,order1(3,:),1/2*order2(3,:),1/6*order3(3,:),1/24*order4(3,:)];
+    dec_stock=[LSTAR,order1(2,:),1/2*order2(2,:),1/6*order3(2,:),1/24*order4(2,:)];
+    dec_l=[LSTAR,order1(3,:),1/2*order2(3,:),1/6*order3(3,:),1/24*order4(3,:)];
+    dec_c=[CSTAR,order1(4,:),1/2*order2(4,:),1/6*order3(4,:),1/24*order4(4,:)];
 
     dec_k_opposite=[KSTAR,order1_opposite(1,:),1/2*order2_opposite(1,:),1/6*order3_opposite(1,:),1/24*order4_opposite(1,:)];
-    dec_l_opposite=[LSTAR,order1_opposite(2,:),1/2*order2_opposite(2,:),1/6*order3_opposite(2,:),1/24*order4_opposite(2,:)];
-    dec_c_opposite=[CSTAR,order1_opposite(3,:),1/2*order2_opposite(3,:),1/6*order3_opposite(3,:),1/24*order4_opposite(3,:)];
+    dec_stock_opposite=[LSTAR,order1_opposite(2,:),1/2*order2_opposite(2,:),1/6*order3_opposite(2,:),1/24*order4_opposite(2,:)];
+    dec_l_opposite=[LSTAR,order1_opposite(3,:),1/2*order2_opposite(3,:),1/6*order3_opposite(3,:),1/24*order4_opposite(3,:)];
+    dec_c_opposite=[CSTAR,order1_opposite(4,:),1/2*order2_opposite(4,:),1/6*order3_opposite(4,:),1/24*order4_opposite(4,:)];
     
 end
 
@@ -172,8 +174,6 @@ if string(shock_character_vector(1:3)) == "irf"
     end
 end
         
-(BETTA*G*((GAMA*lp^(ETA + 1))/(ETA + 1) - 1)*(stockp + (Zp*kp^ALFA*lp^(1 - ALFA)*(P - 1))/P))/(stock*(G*cp)^SIGM) - ((GAMA*l^(ETA + 1))/(ETA + 1) - 1)/c^SIGM
-
 %Initializing Arrays
 % tic
 % N = 20000;

@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     32684,        854]
-NotebookOptionsPosition[     32256,        838]
-NotebookOutlinePosition[     32600,        853]
-CellTagsIndexPosition[     32557,        850]
+NotebookDataLength[     36387,        940]
+NotebookOptionsPosition[     35960,        924]
+NotebookOutlinePosition[     36303,        939]
+CellTagsIndexPosition[     36260,        936]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -159,6 +159,43 @@ Cell[BoxData[{
        RowBox[{"G", " ", "cplus"}], ",", "lplus"}], "]"}], "bigRplus"}]}]}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
+  RowBox[{"stockPricenow", " ", "=", " ", 
+   RowBox[{"stockPrice", "[", 
+    RowBox[{
+    "k", ",", "\[Zeta]", ",", "\[Zeta]1", ",", "\[Zeta]2", ",", "\[Zeta]3", 
+     ",", "P", ",", "\[Epsilon]", ",", "\[Theta]"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"stockPriceplus", " ", "=", " ", 
+   RowBox[{"stockPrice", "[", 
+    RowBox[{
+    "kplus", ",", "\[Zeta]plus", ",", "\[Zeta]", ",", "\[Zeta]1", ",", 
+     "\[Zeta]2", ",", "Pplus", ",", "\[Epsilon]", ",", "\[Theta]"}], "]"}]}], 
+  ";", 
+  RowBox[{"StockMkt", " ", "=", " ", 
+   RowBox[{
+    RowBox[{"D", "[", 
+     RowBox[{
+      RowBox[{"u", "[", 
+       RowBox[{"cnow", ",", "lnow"}], "]"}], ",", "cnow"}], "]"}], "-", 
+    RowBox[{"\[Beta]", " ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Derivative", "[", 
+        RowBox[{"1", ",", "0"}], "]"}], "[", "u", "]"}], "[", 
+      RowBox[{
+       RowBox[{"G", " ", "cplus"}], ",", "lplus"}], "]"}], 
+     FractionBox[
+      RowBox[{"G", " ", 
+       RowBox[{"(", 
+        RowBox[{"stockPriceplus", " ", "+", " ", 
+         RowBox[{
+          FractionBox[
+           RowBox[{"Pplus", "-", "1"}], "Pplus"], 
+          RowBox[{"f", "[", 
+           RowBox[{"kplus", ",", "lplus", ",", "\[Zeta]plus"}], "]"}]}]}], 
+        ")"}]}], "stockPricenow"]}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
   RowBox[{"LMkt", "=", 
    RowBox[{
     RowBox[{"D", "[", 
@@ -175,7 +212,8 @@ Cell[BoxData[{
   RowBox[{
    RowBox[{"EQM", "=", 
     RowBox[{"{", 
-     RowBox[{"EulerEq", ",", "LMkt"}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+     RowBox[{"EulerEq", ",", "LMkt", ",", "StockMkt"}], "}"}]}], ";"}], 
+  "\[IndentingNewLine]", 
   RowBox[{"(*", 
    RowBox[{
     RowBox[{
@@ -361,6 +399,14 @@ Cell[BoxData[{
             RowBox[{
              RowBox[{
               RowBox[{"Derivative", "[", 
+               RowBox[{"Sequence", "@@", "whichderivs"}], "]"}], "[", 
+              "stockPrice", "]"}], "[", 
+             RowBox[{"Sequence", "@@", "ssfunctionvals"}], "]"}], "\[Rule]", 
+            "0"}], ",", "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{
+             RowBox[{
+              RowBox[{"Derivative", "[", 
                RowBox[{"Sequence", "@@", "whichderivs"}], "]"}], "[", "kfunc",
                "]"}], "[", 
              RowBox[{"Sequence", "@@", "ssfunctionvals"}], "]"}], "\[Rule]", 
@@ -402,11 +448,19 @@ Cell[BoxData[{
                RowBox[{"Sequence", "@@", "whichderivs"}], "]"}], "[", "c", 
               "]"}], "[", 
              RowBox[{"Sequence", "@@", "ssfunctionvals"}], "]"}], ",", 
+            "\[IndentingNewLine]", "\t\t", 
             RowBox[{
              RowBox[{
               RowBox[{"Derivative", "[", 
                RowBox[{"Sequence", "@@", "whichderivs"}], "]"}], "[", "l", 
               "]"}], "[", 
+             RowBox[{"Sequence", "@@", "ssfunctionvals"}], "]"}], ",", 
+            "\[IndentingNewLine]", "\t\t", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Derivative", "[", 
+               RowBox[{"Sequence", "@@", "whichderivs"}], "]"}], "[", 
+              "stockPrice", "]"}], "[", 
              RowBox[{"Sequence", "@@", "ssfunctionvals"}], "]"}]}], "}"}]}], 
          ";", "\[IndentingNewLine]", 
          RowBox[{"solution", " ", "=", " ", 
@@ -440,7 +494,8 @@ Cell[BoxData[{
     RowBox[{"{", 
      RowBox[{
      "\[Mu]val_", ",", "LambdaPval_", ",", "ssk_", ",", "ssc_", ",", "ssl_", 
-      ",", "H_", ",", "\[Eta]_", ",", "multU_"}], "}"}], "]"}], ":=", 
+      ",", "ssStock_", ",", "H_", ",", "\[Eta]_", ",", "multU_"}], "}"}], 
+    "]"}], ":=", 
    RowBox[{"(", 
     RowBox[{"Module", "[", 
      RowBox[{
@@ -547,6 +602,10 @@ Cell[BoxData[{
         RowBox[{"l", "[", 
          RowBox[{"Sequence", "@@", "ssfunctionvals"}], "]"}], "=", "ssl"}], 
        ";", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"stockPrice", "[", 
+         RowBox[{"Sequence", "@@", "ssfunctionvals"}], "]"}], "=", 
+        "ssStock"}], ";", " ", "\[IndentingNewLine]", 
        RowBox[{"derivs", "=", 
         RowBox[{
          RowBox[{
@@ -582,6 +641,19 @@ Cell[BoxData[{
                   RowBox[{
                    RowBox[{"Length", "[", "functionargs", "]"}], "-", "1"}]}],
                   "]"}]}], "]"}]}], "]"}], "[", "l", "]"}], "[", 
+           RowBox[{"Sequence", "@@", "ssfunctionvals"}], "]"}], ",", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"Derivative", "[", 
+             RowBox[{"Sequence", "@@", 
+              RowBox[{"Join", "[", 
+               RowBox[{
+                RowBox[{"{", "1", "}"}], ",", 
+                RowBox[{"ConstantArray", "[", 
+                 RowBox[{"0", ",", 
+                  RowBox[{
+                   RowBox[{"Length", "[", "functionargs", "]"}], "-", "1"}]}],
+                  "]"}]}], "]"}]}], "]"}], "[", "stockPrice", "]"}], "[", 
            RowBox[{"Sequence", "@@", "ssfunctionvals"}], "]"}]}], "}"}]}], 
        ";", "\[IndentingNewLine]", 
        RowBox[{"PossibleSolutions", " ", "=", " ", 
@@ -697,21 +769,28 @@ Cell[BoxData[{
                RowBox[{
                 RowBox[{"vals", "[", 
                  RowBox[{"[", "#", "]"}], "]"}], "&"}], ",", 
-               RowBox[{"3", " ", "#"}]}], "]"}], ",", 
+               RowBox[{"4", " ", "#"}]}], "]"}], ",", 
              RowBox[{"Map", "[", 
               RowBox[{
                RowBox[{
                 RowBox[{"vals", "[", 
                  RowBox[{"[", "#", "]"}], "]"}], "&"}], ",", 
                RowBox[{
-                RowBox[{"3", " ", "#"}], "-", "1"}]}], "]"}], ",", 
+                RowBox[{"4", " ", "#"}], "-", "1"}]}], "]"}], ",", 
              RowBox[{"Map", "[", 
               RowBox[{
                RowBox[{
                 RowBox[{"vals", "[", 
                  RowBox[{"[", "#", "]"}], "]"}], "&"}], ",", 
                RowBox[{
-                RowBox[{"3", " ", "#"}], "-", "2"}]}], "]"}]}], "}"}], "&"}], 
+                RowBox[{"4", " ", "#"}], "-", "2"}]}], "]"}], ",", 
+             RowBox[{"Map", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"vals", "[", 
+                 RowBox[{"[", "#", "]"}], "]"}], "&"}], ",", 
+               RowBox[{
+                RowBox[{"4", " ", "#"}], "-", "3"}]}], "]"}]}], "}"}], "&"}], 
           ",", "towrite"}], "]"}]}], ";", "\[IndentingNewLine]", 
        RowBox[{"Map", "[", 
         RowBox[{
@@ -737,36 +816,36 @@ MathematicaCoefs/\>\"", "<>", "utilityFunctionalForm", "<>",
    RowBox[{"{", 
     RowBox[{
     "\[Mu]", ",", " ", "LambdaP", ",", " ", "ssk", ",", " ", "ssc", ",", " ", 
-     "ssl", ",", " ", "H", ",", " ", "\[Eta]", ",", " ", "multU"}], "}"}], 
-   "*)"}]}], "\[IndentingNewLine]", 
+     "ssl", ",", " ", "ssStock", ",", " ", "H", ",", " ", "\[Eta]", ",", " ", 
+     "multU"}], "}"}], "*)"}]}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"ss80additive", " ", "=", " ", 
    RowBox[{"{", 
     RowBox[{
     "1.22470917685415", ",", "0.355435167236364", ",", "0.299999999999995", 
-     ",", "31.1034083778894", ",", "2", ",", "0"}], "}"}]}], 
-  ";"}], "\[IndentingNewLine]", 
+     ",", "1.5483787446652", ",", "31.1034083778894", ",", "2", ",", "0"}], 
+    "}"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"ss95additive", " ", "=", " ", 
    RowBox[{"{", 
     RowBox[{
     "0.824300637745556", ",", "0.312668778084025", ",", "0.274387360694363", 
-     ",", "31.1034083778894", ",", "2", ",", "0"}], "}"}]}], 
-  ";"}], "\[IndentingNewLine]", 
+     ",", "4.64071891316651", ",", "31.1034083778894", ",", "2", ",", "0"}], 
+    "}"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"ss80multiplicative", " ", "=", " ", 
    RowBox[{"{", 
     RowBox[{
     "1.24763734073222", ",", "0.356081189161206", ",", "0.299999999999983", 
-     ",", "3.07251614350672", ",", "2.00936954122611", ",", "1"}], "}"}]}], 
-  ";"}], "\[IndentingNewLine]", 
+     ",", "1.67387408494506", ",", "3.07251614350672", ",", 
+     "2.00936954122611", ",", "1"}], "}"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"ss95multiplicative", " ", "=", " ", 
    RowBox[{"{", 
     RowBox[{
     "0.841495236476907", ",", "0.314198920394256", ",", "0.274963312249655", 
-     ",", "3.07251614350672", ",", "2.00936954122611", ",", "1"}], "}"}]}], 
-  ";"}], "\[IndentingNewLine]", 
+     ",", "5.02737676577531", ",", "3.07251614350672", ",", 
+     "2.00936954122611", ",", "1"}], "}"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"ParallelMap", "[", 
   RowBox[{"getcoefs", ",", 
    RowBox[{"{", 
@@ -822,8 +901,14 @@ MathematicaCoefs/\>\"", "<>", "utilityFunctionalForm", "<>",
    3.802199760168103*^9}, {3.802203764147558*^9, 3.802203766213561*^9}, {
    3.8022038514525604`*^9, 3.802203877604557*^9}, {3.8022047484431005`*^9, 
    3.80220476831584*^9}, {3.802206068238109*^9, 3.802206077717063*^9}, {
-   3.802225532283365*^9, 3.8022255332036753`*^9}, 
-   3.80232234022365*^9},ExpressionUUID->"2a204eba-1b43-48e7-ab18-\
+   3.802225532283365*^9, 3.8022255332036753`*^9}, 3.80232234022365*^9, {
+   3.8030758252887096`*^9, 3.8030758371327114`*^9}, {3.8030758790017147`*^9, 
+   3.8030759014397097`*^9}, 3.8030760334697104`*^9, {3.803076121527703*^9, 
+   3.803076172949705*^9}, {3.8030762064057302`*^9, 3.8030762147787313`*^9}, {
+   3.803076279334731*^9, 3.8030762943587313`*^9}, {3.8030763259027314`*^9, 
+   3.803076421431731*^9}, {3.80307663285388*^9, 3.8030766329528418`*^9}, {
+   3.8030772825182147`*^9, 
+   3.8030772835041847`*^9}},ExpressionUUID->"2a204eba-1b43-48e7-ab18-\
 9e1cf803ff10"],
 
 Cell[BoxData[
@@ -831,13 +916,14 @@ Cell[BoxData[
   RowBox[{"Null", ",", "Null", ",", "Null", ",", "Null"}], "}"}]], "Output",
  CellChangeTimes->{{3.8019676601688395`*^9, 3.801967681132872*^9}, 
    3.802204752668082*^9, 3.8022060546620593`*^9, 3.8022060940150933`*^9, 
-   3.8022255250879817`*^9, 3.8022325977728*^9},
+   3.8022255250879817`*^9, 3.8022325977728*^9, 3.8030764303777657`*^9, 
+   3.803076644493405*^9},
  CellLabel->
-  "Out[160]=",ExpressionUUID->"40ded79e-7a42-47de-b6d5-42b37e2b6309"]
+  "(Debug) Out[1491]=",ExpressionUUID->"a14c88b0-a16e-4fdd-94af-a4a1b76e452b"]
 }, Open  ]]
 },
 WindowSize->{1226, 848},
-WindowMargins->{{197, Automatic}, {Automatic, 34}},
+WindowMargins->{{61, Automatic}, {Automatic, 63}},
 FrontEndVersion->"12.0 for Microsoft Windows (64-bit) (April 8, 2019)",
 StyleDefinitions->"Default.nb"
 ]
@@ -853,8 +939,8 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[580, 22, 31279, 804, 1568, "Input",ExpressionUUID->"2a204eba-1b43-48e7-ab18-9e1cf803ff10"],
-Cell[31862, 828, 378, 7, 32, "Output",ExpressionUUID->"40ded79e-7a42-47de-b6d5-42b37e2b6309"]
+Cell[580, 22, 34924, 889, 1753, "Input",ExpressionUUID->"2a204eba-1b43-48e7-ab18-9e1cf803ff10"],
+Cell[35507, 913, 437, 8, 46, "Output",ExpressionUUID->"a14c88b0-a16e-4fdd-94af-a4a1b76e452b"]
 }, Open  ]]
 }
 ]
