@@ -22,7 +22,7 @@ f6 = Z1p - Z;
 f7 = Z2p - Z1;
 f8 = Z3p - Z2;
 % f9 = riskless_r_ - dudc/(BETTA * subs(dupdcp,cp,G*cp));
-f10 = dudc - BETTA * subs(dupdcp,cp,G*cp) * G * (stockp + ((Pp-1)/Pp)*y_func(kp,lp,Zp,ALFA))/stock
+f10 = dudc - BETTA * subs(dupdcp,cp,G*cp) * G * (stockp + ((Pp-1)/Pp)*y_func(kp,lp,Zp,ALFA))/stock;
 f11 = risky_r_ - big_R(k,l,P,Z,ALFA,DELTA);
 
 f = [f1;f2;f3;f4;f5;f6;f7;f8;f10];

@@ -7,7 +7,7 @@ setwd('C:/Users/Nathan/Downloads/PerturbationMethods/Model2')
 pdata = t(fread('HistoricalEndogenousP.csv'))
 historical_p = fread('Historical_True_P_Path.csv')
 quants <- c(0.005,0.025,0.05,0.1,0.25,0.50,0.75,0.90,0.95,0.975,0.995)
-widetable_with_pctiles = data.table(year=1985:2017,trueP = historical_p$V1,t(apply( pdata , 2 , quantile , probs = quants)))
+widetable_with_pctiles = data.table(year=1985:2017,`True P` = historical_p$V1,t(apply( pdata , 2 , quantile , probs = quants)))
 widetable_with_pctiles[,P_label:='Historical P'
                      ][,P_label2:='Model Median']
 
@@ -17,7 +17,7 @@ ggplot(widetable_with_pctiles) +
   geom_ribbon(aes(x = year,ymin = `5%`, ymax = `95%`,colour = '90%'), alpha = 0.15,fill='blue', linetype = 0) +
   geom_ribbon(aes(x = year,ymin = `2.5%`, ymax = `97.5%`,colour = '95%'), alpha = 0.08,fill='blue', linetype = 0) +
   geom_ribbon(aes(x = year,ymin = `0.5%`, ymax = `99.5%`,colour = '99%'), alpha = 0.04,fill='blue', linetype = 0) +
-  geom_line(aes(x = year,y = trueP,linetype = P_label),size = 1.2,colour='#c05020') +
+  geom_line(aes(x = year,y = `True P`,linetype = P_label),size = 1.2,colour='#c05020') +
   geom_line(aes(x = year,y = `50%`,linetype = P_label2),size = 1.2,colour = 'black')+
   # scale_fill_manual("",values="black") +
   scale_x_continuous(limits = c(1985,2017), expand = c(0, 0)) +
@@ -34,7 +34,9 @@ ggsave('Historical_P_Plot.png')
 
 wb=createWorkbook()
 addWorksheet(wb, 'Percentiles')
-addWorksheet(wb, 'Raw Data')
-writeData(wb, 'Percentiles',widetable_with_pctiles[,`:=`(P_label=NULL,P_label2=NULL)])
-writeData(wb, 'Raw Data',pdata)
+addWorksheet(wb, 'Raw_Data')
+writeData(wb,1,widetable_with_pctiles[,`:=`(P_label=NULL,P_label2=NULL)])
+simulateddata = data.table(widetable_with_pctiles[,'year'],t(pdata))
+setnames(simulateddata,gsub('V', 'Sim ', names(simulateddata)))
+writeData(wb,2,simulateddata[,1:1001])
 saveWorkbook(wb, 'HistoricalP.xlsx',overwrite = T)
